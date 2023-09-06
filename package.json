@@ -12,7 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
-    "crawler": "^1.4.0",
-    "got": "^13.0.0"
+    "got": "^13.0.0",
+    "node-uri": "^1.1.2"
   }
 }
