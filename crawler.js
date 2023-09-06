@@ -57,7 +57,9 @@ console.log(`Loading page url=${_url}     depth=${_depth}`);
 
         let link = a.attribs.href.endsWith('/')? a.attribs.href.slice(0, -1) : a.attribs.href;
 
-        if(loadedUrls.includes(link)) continue;
+        if(!link) continue;
+
+        if(loadedUrls.includes(link) || loadedUrls.includes(a.attribs.href)) continue;
 
         if(link == _url) continue;
 
