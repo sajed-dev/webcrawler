@@ -12,6 +12,8 @@ if(!url)
 
 console.log('Url is: ', url);
 
+loadedUrls.push(url);
+
 const parsedUrl = uri.parseURI(url);
 const host = parsedUrl.host;
 
