@@ -51,6 +51,7 @@ console.log(`Loading page url=${_url}     depth=${_depth}`);
     _depth++;
 
     const links = $('a').get();
+
     for (const a of links) {
 
         if(a.attribs.href == _url) continue;
@@ -59,6 +60,7 @@ console.log(`Loading page url=${_url}     depth=${_depth}`);
 
         if(!link) continue;
 
+        // check if the new link is already searched
         if(loadedUrls.includes(link) || loadedUrls.includes(a.attribs.href)) continue;
 
         if(link == _url) continue;
