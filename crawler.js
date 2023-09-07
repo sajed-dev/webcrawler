@@ -1,7 +1,10 @@
+import puppeteer from 'puppeteer';
 import cheerio from 'cheerio';
 import got from 'got';
 import fs from 'fs';
 import uri from 'node-uri';
+
+
 
 let loadedUrls = [];
 
@@ -23,15 +26,53 @@ console.log('Depth is: ', depth);
 
 let results = [];
 
+function selectImages(src, _depth, _url) {
+    let imageUrl = src;
+
+    if (imageUrl.startsWith(':')) {
+        imageUrl = imageUrl.substring(1);
+    }
+
+    if (imageUrl.startsWith('//')) {
+        imageUrl = imageUrl.substring(2);
+    }
+
+    if (imageUrl.startsWith('/')) {
+        imageUrl = imageUrl.substring(1);
+    }
+
+    if (!imageUrl.startsWith(`${parsedUrl.scheme}://`)) {
+        imageUrl = `${parsedUrl.scheme}://` + imageUrl;
+    }
+
+    let item = {depth: _depth, imageUrl, sourceUrl: _url};
+
+    console.log('adding new item to results: ', item);
+
+    results.push(item);
+}
+
 const load = async (_url, _depth) => {
 
 
 console.log(`Loading page url=${_url}     depth=${_depth}`);
 
-    const {body} = await got(_url).catch(err => {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    // Navigate to the web page
+    await page.goto(_url);
+
+    // Wait for the images to load (you might need to customize this based on your specific page)
+    await page.waitForTimeout(5000); // Wait for 5 seconds as an example
+
+    // Get the HTML content of the page
+    const body = await page.content();
+
+    /*const {body} = await got(_url).catch(err => {
         //console.log(err);
         return {};
-    });
+    });*/
 
     if(!body) return;
 
@@ -40,11 +81,15 @@ console.log(`Loading page url=${_url}     depth=${_depth}`);
     $('img').get().map(img => {
 
         let imageUrl = img.attribs.src;
-        let item = {depth: _depth, imageUrl, sourceUrl: _url};
+        selectImages(imageUrl, _depth, _url);
 
-        console.log('adding new item to results: ', item);
+    });
 
-        results.push(item);
+    let elements = $('*[style*="background-image"]').get();
+    elements.map(element => {
+
+        let imageUrl = element.attribs.style.match(/url\(["']?(.*?)["']?\)/)[1];
+        selectImages(imageUrl, _depth, _url);
 
     });
 
